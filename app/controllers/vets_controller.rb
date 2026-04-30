@@ -1,5 +1,5 @@
 class VetsController < ApplicationController
-  before_action :set_vet, only: [:show, :edit, :update, :destroy]
+  before_action :set_vet, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @vets = Vet.order(:last_name, :first_name)

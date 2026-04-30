@@ -1,6 +1,6 @@
 class TreatmentsController < ApplicationController
   before_action :set_appointment
-  before_action :set_treatment, only: [:edit, :update, :destroy]
+  before_action :set_treatment, only: [ :edit, :update, :destroy ]
 
   def new
     @treatment = @appointment.treatments.build

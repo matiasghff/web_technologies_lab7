@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   resources :vets
 
   resources :appointments do
-    resources :treatments, except: [:index, :show]
+    resources :treatments, except: [ :index, :show ]
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

@@ -38,7 +38,7 @@ class Appointment < ApplicationRecord
   def date_must_start_on_half_hour
     return if date.blank?
 
-    valid_minutes = [0, 30]
+    valid_minutes = [ 0, 30 ]
 
     unless valid_minutes.include?(date.min)
       errors.add(:date, "must start on the hour or half hour")

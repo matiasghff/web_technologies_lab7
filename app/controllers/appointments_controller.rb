@@ -1,5 +1,5 @@
 class AppointmentsController < ApplicationController
-  before_action :set_appointment, only: [:show, :edit, :update, :destroy]
+  before_action :set_appointment, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @appointments = Appointment.includes(:pet, :vet).order(date: :asc)
@@ -107,7 +107,7 @@ class AppointmentsController < ApplicationController
     slots = []
 
     working_hours.each do |hour|
-      [0, 30].each do |minute|
+      [ 0, 30 ].each do |minute|
         slot_start = day.to_time.change(hour: hour, min: minute, sec: 0)
         slot_end = slot_start + Appointment::APPOINTMENT_DURATION
 

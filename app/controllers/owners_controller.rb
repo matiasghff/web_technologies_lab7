@@ -1,5 +1,5 @@
 class OwnersController < ApplicationController
-  before_action :set_owner, only: [:show, :edit, :update, :destroy]
+  before_action :set_owner, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @owners = Owner.includes(:pets).order(:last_name, :first_name)
