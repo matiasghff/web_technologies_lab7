@@ -28,7 +28,7 @@ class AppointmentTest < ActiveSupport::TestCase
     )
 
     @appointment = Appointment.new(
-      date: 1.day.from_now,
+      date: 1.day.from_now.change(hour: 10, min: 0, sec: 0),
       reason: "Checkup",
       pet: @pet,
       vet: @vet,
@@ -68,5 +68,12 @@ class AppointmentTest < ActiveSupport::TestCase
     @appointment.status = nil
     assert_not @appointment.valid?
     assert_includes @appointment.errors[:status], "can't be blank"
+  end
+
+  test "should require date to start on the hour or half hour" do
+    @appointment.date = 1.day.from_now.change(hour: 10, min: 15, sec: 0)
+
+    assert_not @appointment.valid?
+    assert_includes @appointment.errors[:date], "must start on the hour or half hour"
   end
 end

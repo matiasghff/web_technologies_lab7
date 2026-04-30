@@ -1,55 +1,176 @@
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <h1 class="h2 mb-1">Appointment Details</h1>
+    <p class="text-muted mb-0">Review appointment information and manage treatments.</p>
+  </div>
+
+  <%= link_to appointments_path, class: "btn btn-outline-secondary" do %>
+    <i class="bi bi-arrow-left me-1"></i>
+    Back to Appointments
+  <% end %>
+</div>
+
 <div class="row g-4">
   <div class="col-12 col-lg-4">
     <div class="card shadow-sm border-0 h-100">
       <div class="card-body">
-        <h1 class="h3 mb-3">Appointment Details</h1>
-        <p class="mb-2"><strong>Date:</strong><br><span class="text-muted"><%= format_datetime(@appointment.date) %></span></p>
-        <p class="mb-2"><strong>Reason:</strong><br><span class="text-muted"><%= @appointment.reason %></span></p>
-        <p class="mb-2"><strong>Status:</strong><br><span class="text-muted"><%= human_status(@appointment.status) %></span></p>
-        <p class="mb-2">
-          <strong>Pet:</strong><br>
-          <%= link_to @appointment.pet.name, pet_path(@appointment.pet), class: "text-decoration-none" %>
-        </p>
-        <p class="mb-0">
-          <strong>Vet:</strong><br>
-          <%= link_to "#{@appointment.vet.first_name} #{@appointment.vet.last_name}", vet_path(@appointment.vet), class: "text-decoration-none" %>
-        </p>
+        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+          <h2 class="h4 mb-0">Details</h2>
+
+          <% badge_class =
+            case @appointment.status
+            when "scheduled" then "bg-primary-subtle text-primary"
+            when "in_progress" then "bg-warning-subtle text-warning"
+            when "completed" then "bg-success-subtle text-success"
+            when "cancelled" then "bg-danger-subtle text-danger"
+            else "bg-secondary-subtle text-secondary"
+            end %>
+
+          <span class="badge <%= badge_class %>">
+            <%= human_status(@appointment.status) %>
+          </span>
+        </div>
+
+        <div class="mb-3">
+          <p class="text-muted mb-1">Date</p>
+          <p class="fw-semibold mb-0"><%= format_datetime(@appointment.date) %></p>
+        </div>
+
+        <div class="mb-3">
+          <p class="text-muted mb-1">Reason</p>
+          <p class="fw-semibold mb-0"><%= @appointment.reason %></p>
+        </div>
+
+        <div class="mb-3">
+          <p class="text-muted mb-1">Pet</p>
+          <p class="fw-semibold mb-0">
+            <%= link_to @appointment.pet.name,
+              pet_path(@appointment.pet),
+              class: "text-decoration-none" %>
+          </p>
+        </div>
+
+        <div class="mb-4">
+          <p class="text-muted mb-1">Vet</p>
+          <p class="fw-semibold mb-0">
+            <%= link_to @appointment.vet.full_name,
+              vet_path(@appointment.vet),
+              class: "text-decoration-none" %>
+          </p>
+        </div>
+
+        <div class="d-grid gap-2">
+          <%= link_to edit_appointment_path(@appointment), class: "btn btn-outline-secondary" do %>
+            <i class="bi bi-pencil-square me-1"></i>
+            Edit Appointment
+          <% end %>
+
+          <%= button_to appointment_path(@appointment),
+            method: :delete,
+            data: { turbo_confirm: "Are you sure?" },
+            class: "btn btn-outline-danger" do %>
+            <i class="bi bi-trash me-1"></i>
+            Delete Appointment
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="col-12 col-lg-8">
     <div class="card shadow-sm border-0">
-      <div class="card-body">
-        <h2 class="h4 mb-3">Treatments</h2>
+      <div class="card-header bg-white border-0 pt-4 px-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+          <div>
+            <h2 class="h4 mb-1">Treatments</h2>
+            <p class="text-muted mb-0">Treatments recorded for this appointment.</p>
+          </div>
 
-        <% if @appointment.treatments.any? %>
+          <%= link_to new_appointment_treatment_path(@appointment), class: "btn btn-primary" do %>
+            <i class="bi bi-plus-circle me-1"></i>
+            New Treatment
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card-body p-0">
+        <% if @treatments.any? %>
           <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
               <thead class="table-light">
                 <tr>
-                  <th>Name</th>
+                  <th class="ps-4">Name</th>
                   <th>Medication</th>
                   <th>Dosage</th>
                   <th>Administered At</th>
                   <th>Notes</th>
+                  <th class="text-end pe-4">Actions</th>
                 </tr>
               </thead>
+
               <tbody>
-                <% @appointment.treatments.each do |treatment| %>
+                <% @treatments.each do |treatment| %>
                   <tr>
-                    <td class="fw-semibold"><%= treatment.name %></td>
-                    <td><%= treatment.medication %></td>
-                    <td><%= treatment.dosage %></td>
-                    <td><%= format_datetime(treatment.administered_at) %></td>
-                    <td><%= treatment.notes %></td>
+                    <td class="ps-4 fw-semibold">
+                      <%= treatment.name %>
+                    </td>
+
+                    <td>
+                      <span class="text-muted">
+                        <%= treatment.medication.presence || "—" %>
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="text-muted">
+                        <%= treatment.dosage.presence || "—" %>
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="text-muted">
+                        <%= format_datetime(treatment.administered_at) %>
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="text-muted">
+                        <%= truncate(treatment.notes.presence || "—", length: 50) %>
+                      </span>
+                    </td>
+
+                    <td class="text-end pe-4">
+                      <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2">
+                        <%= link_to edit_appointment_treatment_path(@appointment, treatment),
+                          class: "btn btn-sm btn-outline-secondary" do %>
+                          <i class="bi bi-pencil-square me-1"></i>
+                          Edit
+                        <% end %>
+
+                        <%= button_to appointment_treatment_path(@appointment, treatment),
+                          method: :delete,
+                          data: { turbo_confirm: "Are you sure?" },
+                          class: "btn btn-sm btn-outline-danger" do %>
+                          <i class="bi bi-trash me-1"></i>
+                          Delete
+                        <% end %>
+                      </div>
+                    </td>
                   </tr>
                 <% end %>
               </tbody>
             </table>
           </div>
         <% else %>
-          <p class="text-muted mb-0">No treatments for this appointment.</p>
+          <div class="text-center text-muted py-5 px-4">
+            <i class="bi bi-clipboard2-pulse fs-1 d-block mb-3"></i>
+            <p class="mb-3">No treatments for this appointment yet.</p>
+
+            <%= link_to new_appointment_treatment_path(@appointment), class: "btn btn-primary" do %>
+              <i class="bi bi-plus-circle me-1"></i>
+              Add First Treatment
+            <% end %>
+          </div>
         <% end %>
       </div>
     </div>

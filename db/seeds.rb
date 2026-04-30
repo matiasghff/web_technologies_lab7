@@ -9,6 +9,12 @@ Pet.destroy_all
 Owner.destroy_all
 Vet.destroy_all
 
+# Helpers
+def appointment_time(days_from_today, hour, minute = 0)
+  day = Date.current + days_from_today.days
+  Time.zone.local(day.year, day.month, day.day, hour, minute, 0)
+end
+
 # Owners
 owner1 = Owner.create!(
   first_name: "Matias",
@@ -93,10 +99,15 @@ vet2 = Vet.create!(
 )
 
 # Appointments
+# Rules:
+# - All dates are in the future.
+# - All times start at minute 00 or 30.
+# - Each appointment lasts 1 hour.
+# - Appointments for the same vet do not overlap.
 appointment1 = Appointment.create!(
   pet: pet1,
   vet: vet1,
-  date: DateTime.new(2026, 4, 15, 10, 0, 0),
+  date: appointment_time(3, 10, 0),
   reason: "Annual checkup",
   status: :scheduled
 )
@@ -104,31 +115,31 @@ appointment1 = Appointment.create!(
 appointment2 = Appointment.create!(
   pet: pet2,
   vet: vet1,
-  date: DateTime.new(2026, 4, 16, 11, 30, 0),
+  date: appointment_time(4, 11, 30),
   reason: "Skin irritation",
-  status: :in_progress
+  status: :scheduled
 )
 
 appointment3 = Appointment.create!(
   pet: pet3,
   vet: vet2,
-  date: DateTime.new(2026, 5, 17, 9, 0, 0),
+  date: appointment_time(5, 9, 0),
   reason: "Dental cleaning",
-  status: :completed
+  status: :scheduled
 )
 
 appointment4 = Appointment.create!(
   pet: pet4,
   vet: vet1,
-  date: DateTime.new(2026, 5, 18, 14, 0, 0),
+  date: appointment_time(6, 14, 0),
   reason: "Digestive issues",
-  status: :completed
+  status: :scheduled
 )
 
 appointment5 = Appointment.create!(
   pet: pet5,
   vet: vet2,
-  date: DateTime.new(2026, 5, 19, 16, 0, 0),
+  date: appointment_time(7, 16, 30),
   reason: "Vaccination",
   status: :cancelled
 )
@@ -140,7 +151,7 @@ Treatment.create!(
   medication: "Antibacterial shampoo",
   dosage: "Twice weekly",
   notes: "Apply gently and monitor irritation.",
-  administered_at: DateTime.new(2026, 4, 16, 12, 0, 0)
+  administered_at: appointment2.date + 30.minutes
 )
 
 Treatment.create!(
@@ -149,7 +160,7 @@ Treatment.create!(
   medication: "Prednisone",
   dosage: "5 mg daily",
   notes: "Use for 5 days.",
-  administered_at: DateTime.new(2026, 4, 16, 12, 10, 0)
+  administered_at: appointment2.date + 45.minutes
 )
 
 Treatment.create!(
@@ -158,7 +169,7 @@ Treatment.create!(
   medication: "Dental rinse",
   dosage: "Once after procedure",
   notes: "Post-cleaning treatment.",
-  administered_at: DateTime.new(2026, 4, 17, 10, 0, 0)
+  administered_at: appointment3.date + 30.minutes
 )
 
 Treatment.create!(
@@ -167,7 +178,7 @@ Treatment.create!(
   medication: "Probiotic paste",
   dosage: "Once daily",
   notes: "Administer after meals.",
-  administered_at: DateTime.new(2026, 4, 18, 14, 30, 0)
+  administered_at: appointment4.date + 30.minutes
 )
 
 Treatment.create!(
@@ -176,7 +187,7 @@ Treatment.create!(
   medication: "Meloxicam",
   dosage: "Once daily for 3 days",
   notes: "Monitor for side effects.",
-  administered_at: DateTime.new(2026, 4, 17, 10, 15, 0)
+  administered_at: appointment3.date + 45.minutes
 )
 
 puts "Seed data created successfully!"

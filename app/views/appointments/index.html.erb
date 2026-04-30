@@ -1,30 +1,59 @@
-<div class="mb-4">
-  <h1 class="h2 mb-1">Appointments</h1>
-  <p class="text-muted mb-0">Review all scheduled and past appointments.</p>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <h1 class="h2 mb-1">Appointments</h1>
+    <p class="text-muted mb-0">Review and manage all scheduled and past appointments.</p>
+  </div>
+
+  <div>
+    <%= link_to new_appointment_path, class: "btn btn-primary" do %>
+      <i class="bi bi-plus-circle me-1"></i>
+      New Appointment
+    <% end %>
+  </div>
 </div>
 
 <div class="card shadow-sm border-0">
-  <div class="card-body">
+  <div class="card-body p-0">
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
           <tr>
-            <th>Date</th>
+            <th class="ps-4">Date</th>
             <th>Pet</th>
             <th>Vet</th>
             <th>Reason</th>
             <th>Status</th>
+            <th class="text-end pe-4">Actions</th>
           </tr>
         </thead>
+
         <tbody>
           <% @appointments.each do |appointment| %>
             <tr>
-              <td>
-                <%= link_to format_datetime(appointment.date), appointment_path(appointment), class: "fw-semibold text-decoration-none" %>
+              <td class="ps-4">
+                <%= link_to format_datetime(appointment.date),
+                  appointment_path(appointment),
+                  class: "fw-semibold text-decoration-none" %>
               </td>
-              <td><%= appointment.pet.name %></td>
-              <td><%= "#{appointment.vet.first_name} #{appointment.vet.last_name}" %></td>
-              <td><%= appointment.reason %></td>
+
+              <td>
+                <%= link_to appointment.pet.name,
+                  pet_path(appointment.pet),
+                  class: "text-decoration-none" %>
+              </td>
+
+              <td>
+                <%= link_to appointment.vet.full_name,
+                  vet_path(appointment.vet),
+                  class: "text-decoration-none" %>
+              </td>
+
+              <td>
+                <span class="text-muted">
+                  <%= truncate(appointment.reason, length: 60) %>
+                </span>
+              </td>
+
               <td>
                 <% badge_class =
                   case appointment.status
@@ -32,11 +61,42 @@
                   when "in_progress" then "bg-warning-subtle text-warning"
                   when "completed" then "bg-success-subtle text-success"
                   when "cancelled" then "bg-danger-subtle text-danger"
+                  else "bg-secondary-subtle text-secondary"
                   end %>
 
                 <span class="badge <%= badge_class %>">
                   <%= human_status(appointment.status) %>
                 </span>
+              </td>
+
+              <td class="text-end pe-4">
+                <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2">
+                  <%= link_to appointment_path(appointment), class: "btn btn-sm btn-outline-primary" do %>
+                    <i class="bi bi-eye me-1"></i>
+                    Show
+                  <% end %>
+
+                  <%= link_to edit_appointment_path(appointment), class: "btn btn-sm btn-outline-secondary" do %>
+                    <i class="bi bi-pencil-square me-1"></i>
+                    Edit
+                  <% end %>
+
+                  <%= button_to appointment_path(appointment),
+                    method: :delete,
+                    data: { turbo_confirm: "Are you sure?" },
+                    class: "btn btn-sm btn-outline-danger" do %>
+                    <i class="bi bi-trash me-1"></i>
+                    Delete
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @appointments.empty? %>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">
+                No appointments found.
               </td>
             </tr>
           <% end %>

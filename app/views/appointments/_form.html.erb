@@ -1,0 +1,66 @@
+<%= render "shared/error_messages", object: appointment %>
+
+<%= form_with(model: appointment) do |form| %>
+  <%= form.hidden_field :date, id: "appointment_date" %>
+
+  <div class="alert alert-info mb-3" role="alert">
+    <i class="bi bi-info-circle me-1"></i>
+    Select an available time from the calendar. Appointments last 1 hour and must start on the hour or half hour.
+  </div>
+
+  <div id="selected_time_preview" class="alert alert-success d-none mb-3" role="alert">
+    <i class="bi bi-check-circle me-1"></i>
+    Selected time:
+    <strong id="selected_time_text"></strong>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :pet_id, "Pet", class: "form-label" %>
+    <%= form.collection_select :pet_id,
+      Pet.order(:name),
+      :id,
+      :name,
+      { prompt: "Select pet" },
+      class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :vet_id, "Vet", class: "form-label" %>
+    <%= form.collection_select :vet_id,
+      Vet.order(:last_name, :first_name),
+      :id,
+      :full_name,
+      { prompt: "Select vet" },
+      class: "form-select",
+      onchange: "if (this.value) { window.location.href = '/appointments/new?vet_id=' + this.value; }" %>
+
+    <div class="form-text">
+      Changing the vet reloads the availability calendar for that veterinarian.
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :reason, class: "form-label" %>
+    <%= form.text_area :reason, class: "form-control", rows: 3 %>
+  </div>
+
+  <% if appointment.persisted? %>
+    <div class="mb-3">
+      <%= form.label :status, class: "form-label" %>
+      <%= form.select :status,
+        Appointment.statuses.keys.map { |status| [human_status(status), status] },
+        {},
+        class: "form-select" %>
+    </div>
+  <% else %>
+    <div class="alert alert-secondary mb-3" role="alert">
+      <i class="bi bi-calendar-check me-1"></i>
+      New appointments are automatically created as <strong>Scheduled</strong>.
+    </div>
+  <% end %>
+
+  <div class="d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", appointments_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

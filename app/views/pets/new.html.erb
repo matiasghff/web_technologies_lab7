@@ -1,0 +1,17 @@
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <h1 class="h2 mb-1">New Pet</h1>
+    <p class="text-muted mb-0">Register a new pet in the clinic.</p>
+  </div>
+
+  <%= link_to pets_path, class: "btn btn-outline-secondary" do %>
+    <i class="bi bi-arrow-left me-1"></i>
+    Back to Pets
+  <% end %>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+    <%= render "form", pet: @pet %>
+  </div>
+</div>

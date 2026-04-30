@@ -27,13 +27,13 @@ class TreatmentTest < ActiveSupport::TestCase
       specialization: "Dermatology"
     )
 
-    @appointment = Appointment.create!(
-      date: 1.day.ago,
-      reason: "Skin issue",
-      pet: @pet,
-      vet: @vet,
-      status: :completed
-    )
+  @appointment = Appointment.create!(
+    date: 1.day.from_now.change(hour: 10, min: 0, sec: 0),
+    reason: "Skin issue",
+    pet: @pet,
+    vet: @vet,
+    status: :completed
+  )
 
     @treatment = Treatment.new(
       appointment: @appointment,
@@ -41,7 +41,7 @@ class TreatmentTest < ActiveSupport::TestCase
       medication: "Shampoo",
       dosage: "Twice weekly",
       notes: "Apply carefully",
-      administered_at: Time.current
+      administered_at: Time.current.change(min: 0, sec: 0)
     )
   end
 

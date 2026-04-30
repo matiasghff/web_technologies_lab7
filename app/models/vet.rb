@@ -1,5 +1,5 @@
 class Vet < ApplicationRecord
-  has_many :appointments
+  has_many :appointments, dependent: :destroy
 
   before_validation :normalize_email
 
@@ -11,6 +11,10 @@ class Vet < ApplicationRecord
   validates :specialization, presence: true
 
   scope :by_specialization, ->(specialization) { where(specialization: specialization) }
+
+  def full_name
+    "#{first_name} #{last_name}"
+  end
 
   private
 

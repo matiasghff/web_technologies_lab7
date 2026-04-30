@@ -1,0 +1,229 @@
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <h1 class="h2 mb-1">New Appointment</h1>
+    <p class="text-muted mb-0">Schedule a new appointment for a pet.</p>
+  </div>
+
+  <%= link_to appointments_path, class: "btn btn-outline-secondary" do %>
+    <i class="bi bi-arrow-left me-1"></i>
+    Back to Appointments
+  <% end %>
+</div>
+
+<div class="row g-4">
+  <div class="col-12 col-lg-5">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white border-0 pt-4 px-4">
+        <h2 class="h4 mb-1">Appointment Form</h2>
+        <p class="text-muted mb-0">Choose the pet, vet, reason and an available time.</p>
+      </div>
+
+      <div class="card-body">
+        <%= render "form", appointment: @appointment %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-7">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white border-0 pt-4 px-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+          <div>
+            <h2 class="h4 mb-1">Vet Availability</h2>
+
+            <% if @appointment.vet.present? %>
+              <p class="text-muted mb-0">
+                Select a day and choose an available 30-minute start time for
+                <strong><%= @appointment.vet.full_name %></strong>.
+                Each appointment lasts 1 hour.
+              </p>
+            <% else %>
+              <p class="text-muted mb-0">
+                Select a vet from the form, or schedule from a vet profile, to see availability.
+              </p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <% if @appointment.vet.blank? %>
+          <div class="text-center text-muted py-5">
+            <i class="bi bi-calendar-week fs-1 d-block mb-3"></i>
+            <p class="mb-0">No vet selected yet.</p>
+          </div>
+        <% else %>
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <%= link_to new_appointment_path(
+                  vet_id: @appointment.vet_id,
+                  year: @previous_month_date.year,
+                  month: @previous_month_date.month
+                ),
+                class: "btn btn-outline-secondary btn-sm" do %>
+              <i class="bi bi-chevron-left me-1"></i>
+              Previous
+            <% end %>
+
+            <div class="text-center">
+              <h3 class="h5 mb-1">
+                <%= @calendar_date.strftime("%B %Y") %>
+              </h3>
+              <p class="text-muted small mb-0">
+                Choose a day to view available times.
+              </p>
+            </div>
+
+            <%= link_to new_appointment_path(
+                  vet_id: @appointment.vet_id,
+                  year: @next_month_date.year,
+                  month: @next_month_date.month
+                ),
+                class: "btn btn-outline-secondary btn-sm" do %>
+              Next
+              <i class="bi bi-chevron-right ms-1"></i>
+            <% end %>
+          </div>
+
+          <%= form_with url: new_appointment_path,
+            method: :get,
+            local: true,
+            class: "row g-2 align-items-end mb-4",
+            html: { id: "calendar_month_form" } do |form| %>
+
+            <%= hidden_field_tag :vet_id, @appointment.vet_id %>
+
+            <div class="col-6">
+              <%= form.label :month, "Month", class: "form-label" %>
+              <%= form.select :month,
+                Date::MONTHNAMES.each_with_index.map { |name, index| [name, index] }.compact,
+                { selected: @selected_month },
+                class: "form-select",
+                onchange: "document.getElementById('calendar_month_form').requestSubmit();" %>
+            </div>
+
+            <div class="col-6">
+              <%= form.label :year, "Year", class: "form-label" %>
+              <%= form.number_field :year,
+                value: @selected_year,
+                min: Date.current.year,
+                max: Date.current.year + 5,
+                class: "form-control",
+                onchange: "document.getElementById('calendar_month_form').requestSubmit();" %>
+            </div>
+          <% end %>
+
+          <div class="table-responsive mb-4">
+            <table class="table table-bordered align-middle text-center mb-0">
+              <thead class="table-light">
+                <tr>
+                  <% ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].each do |weekday| %>
+                    <th class="small text-muted"><%= weekday %></th>
+                  <% end %>
+                </tr>
+              </thead>
+
+              <tbody>
+                <% @calendar_days.each_slice(7) do |week| %>
+                  <tr>
+                    <% week.each do |day| %>
+                      <% outside_month = day.month != @selected_month %>
+                      <% past_day = day < Date.current %>
+                      <% selected = @selected_day == day %>
+
+                      <td class="<%= 'bg-light' if outside_month %> <%= 'table-primary' if selected %>">
+                        <% if outside_month || past_day %>
+                          <span class="d-inline-block py-2 text-muted">
+                            <%= day.day %>
+                          </span>
+                        <% else %>
+                          <%= link_to day.day,
+                            new_appointment_path(
+                              vet_id: @appointment.vet_id,
+                              year: day.year,
+                              month: day.month,
+                              day: day.day
+                            ),
+                            class: "btn #{selected ? 'btn-primary' : 'btn-outline-primary'} btn-sm w-100" %>
+                        <% end %>
+                      </td>
+                    <% end %>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+
+          <% if @selected_day.present? %>
+            <div class="alert alert-primary mb-3" role="alert">
+              <i class="bi bi-calendar-event me-1"></i>
+              Selected day:
+              <strong><%= @selected_day.strftime("%A, %B %d, %Y") %></strong>
+            </div>
+          <% end %>
+
+          <% if @selected_day.blank? %>
+            <div class="text-center text-muted py-4 border rounded">
+              <i class="bi bi-calendar-date fs-2 d-block mb-2"></i>
+              <p class="mb-0">Select a day from the calendar to view available times.</p>
+            </div>
+          <% elsif @available_slots.blank? %>
+            <div class="text-center text-muted py-4 border rounded">
+              <i class="bi bi-calendar-x fs-2 d-block mb-2"></i>
+              <p class="mb-1">
+                No available slots for <%= @selected_day.strftime("%B %d, %Y") %>.
+              </p>
+              <p class="small mb-0">
+                This can happen if the selected day is today and all remaining working hours have already passed.
+                Try selecting a future day.
+              </p>
+            </div>
+          <% else %>
+            <div class="border rounded p-3">
+              <h3 class="h6 text-muted border-bottom pb-2 mb-3">
+                Available times for <%= @selected_day.strftime("%A, %B %d, %Y") %>
+              </h3>
+
+              <div class="row g-2">
+                <% @available_slots.each do |slot| %>
+                  <div class="col-6 col-md-4 col-xl-3">
+                    <% if slot[:available] %>
+                      <button
+                        type="button"
+                        class="btn btn-outline-success w-100 appointment-slot-button"
+                        data-appointment-date="<%= slot[:datetime].strftime("%Y-%m-%dT%H:%M") %>"
+                        data-appointment-label="<%= slot[:datetime].strftime("%A, %B %d, %Y at %H:%M") %>"
+                        onclick="
+                          document.getElementById('appointment_date').value = this.dataset.appointmentDate;
+                          document.getElementById('selected_time_text').innerText = this.dataset.appointmentLabel;
+                          document.getElementById('selected_time_preview').classList.remove('d-none');
+
+                          document.querySelectorAll('.appointment-slot-button').forEach(function(button) {
+                            button.classList.remove('btn-success');
+                            button.classList.add('btn-outline-success');
+                          });
+
+                          this.classList.remove('btn-outline-success');
+                          this.classList.add('btn-success');
+                        ">
+                        <%= slot[:datetime].strftime("%H:%M") %>
+                      </button>
+                    <% else %>
+                      <button type="button" class="btn btn-outline-danger w-100" disabled>
+                        <%= slot[:datetime].strftime("%H:%M") %>
+                        Taken
+                      </button>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+
+              <p class="text-muted small mt-3 mb-0">
+                Click an available time to fill the appointment date automatically.
+              </p>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

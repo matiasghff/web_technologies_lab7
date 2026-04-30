@@ -1,6 +1,6 @@
 class Pet < ApplicationRecord
   belongs_to :owner
-  has_many :appointments
+  has_many :appointments, dependent: :destroy
 
   SPECIES = %w[dog cat rabbit bird reptile other].freeze
 
