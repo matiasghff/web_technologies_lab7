@@ -6,7 +6,9 @@ class AppointmentsController < ApplicationController
   end
 
   def show
-    @treatments = @appointment.treatments.order(administered_at: :desc)
+    @treatments = @appointment.treatments
+      .with_rich_text_clinical_notes
+      .order(administered_at: :desc)
   end
 
   def new

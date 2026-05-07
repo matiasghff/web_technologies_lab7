@@ -162,12 +162,21 @@ appointment5 = Appointment.create!(
 )
 
 # Treatments
+# Treatments
 Treatment.create!(
   appointment: appointment2,
   name: "Skin cleaning",
   medication: "Antibacterial shampoo",
   dosage: "Twice weekly",
-  notes: "Apply gently and monitor irritation.",
+  clinical_notes: <<~HTML,
+    <h3>Skin cleaning plan</h3>
+    <p>Apply the <strong>antibacterial shampoo</strong> gently and monitor irritation.</p>
+    <ul>
+      <li>Use twice weekly.</li>
+      <li>Check for redness after each application.</li>
+      <li>Contact the clinic if irritation increases.</li>
+    </ul>
+  HTML
   administered_at: appointment2.date + 30.minutes
 )
 
@@ -176,7 +185,15 @@ Treatment.create!(
   name: "Anti-inflammatory treatment",
   medication: "Prednisone",
   dosage: "5 mg daily",
-  notes: "Use for 5 days.",
+  clinical_notes: <<~HTML,
+    <h3>Anti-inflammatory follow-up</h3>
+    <p>Use <strong>Prednisone 5 mg</strong> once daily for 5 days.</p>
+    <ul>
+      <li>Give medication with food.</li>
+      <li>Monitor appetite and energy levels.</li>
+      <li>Return for evaluation if symptoms persist.</li>
+    </ul>
+  HTML
   administered_at: appointment2.date + 45.minutes
 )
 
@@ -185,7 +202,15 @@ Treatment.create!(
   name: "Teeth cleaning",
   medication: "Dental rinse",
   dosage: "Once after procedure",
-  notes: "Post-cleaning treatment.",
+  clinical_notes: <<~HTML,
+    <h3>Dental cleaning notes</h3>
+    <p>Post-cleaning treatment completed with <strong>dental rinse</strong>.</p>
+    <ul>
+      <li>Avoid hard food for the rest of the day.</li>
+      <li>Monitor gum sensitivity.</li>
+      <li>Schedule routine dental control if needed.</li>
+    </ul>
+  HTML
   administered_at: appointment3.date + 30.minutes
 )
 
@@ -194,7 +219,15 @@ Treatment.create!(
   name: "Digestive support",
   medication: "Probiotic paste",
   dosage: "Once daily",
-  notes: "Administer after meals.",
+  clinical_notes: <<~HTML,
+    <h3>Digestive support plan</h3>
+    <p>Administer <strong>probiotic paste</strong> after meals.</p>
+    <ul>
+      <li>Give once daily.</li>
+      <li>Keep hydration stable.</li>
+      <li>Observe stool consistency over the next days.</li>
+    </ul>
+  HTML
   administered_at: appointment4.date + 30.minutes
 )
 
@@ -203,7 +236,15 @@ Treatment.create!(
   name: "Pain management",
   medication: "Meloxicam",
   dosage: "Once daily for 3 days",
-  notes: "Monitor for side effects.",
+  clinical_notes: <<~HTML,
+    <h3>Pain management</h3>
+    <p>Use <strong>Meloxicam</strong> once daily for 3 days.</p>
+    <ul>
+      <li>Administer after food.</li>
+      <li>Monitor for side effects.</li>
+      <li>Stop treatment and contact the clinic if vomiting occurs.</li>
+    </ul>
+  HTML
   administered_at: appointment3.date + 45.minutes
 )
 

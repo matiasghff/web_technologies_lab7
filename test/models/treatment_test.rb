@@ -40,7 +40,7 @@ class TreatmentTest < ActiveSupport::TestCase
       name: "Skin cleaning",
       medication: "Shampoo",
       dosage: "Twice weekly",
-      notes: "Apply carefully",
+      clinical_notes: "Apply carefully",
       administered_at: Time.current.change(min: 0, sec: 0)
     )
   end

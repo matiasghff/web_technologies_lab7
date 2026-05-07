@@ -103,7 +103,7 @@
                   <th>Medication</th>
                   <th>Dosage</th>
                   <th>Administered At</th>
-                  <th>Notes</th>
+                  <th>Clinical Notes</th>
                   <th class="text-end pe-4">Actions</th>
                 </tr>
               </thead>
@@ -133,10 +133,14 @@
                       </span>
                     </td>
 
-                    <td>
-                      <span class="text-muted">
-                        <%= truncate(treatment.notes.presence || "—", length: 50) %>
-                      </span>
+                    <td style="min-width: 220px;">
+                      <% if treatment.clinical_notes.present? %>
+                        <div class="text-muted small">
+                          <%= treatment.clinical_notes %>
+                        </div>
+                      <% else %>
+                        <span class="text-muted">—</span>
+                      <% end %>
                     </td>
 
                     <td class="text-end pe-4">

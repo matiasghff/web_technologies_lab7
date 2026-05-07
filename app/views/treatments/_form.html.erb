@@ -22,8 +22,12 @@
   </div>
 
   <div class="mb-3">
-    <%= form.label :notes, class: "form-label" %>
-    <%= form.text_area :notes, class: "form-control", rows: 3 %>
+    <%= form.label :clinical_notes, "Clinical notes", class: "form-label" %>
+    <%= form.rich_text_area :clinical_notes, class: "form-control" %>
+
+    <div class="form-text">
+      Use this field for formatted clinical notes, including headings, bold text, lists, and links.
+    </div>
   </div>
 
   <div class="d-flex gap-2">
