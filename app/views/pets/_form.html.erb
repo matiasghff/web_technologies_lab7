@@ -1,6 +1,26 @@
 <%= render "shared/error_messages", object: pet %>
 
 <%= form_with(model: pet) do |form| %>
+  <% if pet.persisted? && pet.photo.attached? %>
+    <div class="mb-3">
+      <p class="form-label mb-2">Current photo</p>
+
+      <%= image_tag pet.photo,
+        class: "img-thumbnail",
+        style: "width: 100px; height: 100px; object-fit: cover;",
+        alt: "#{pet.name} photo" %>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :photo, "Photo", class: "form-label" %>
+    <%= form.file_field :photo, class: "form-control", accept: "image/jpeg,image/png,image/webp" %>
+
+    <div class="form-text">
+      Optional. Accepted formats: JPEG, PNG, or WebP. Maximum size: 5 MB.
+    </div>
+  </div>
+
   <div class="mb-3">
     <%= form.label :name, class: "form-label" %>
     <%= form.text_field :name, class: "form-control" %>

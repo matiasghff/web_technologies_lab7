@@ -2,7 +2,7 @@ class PetsController < ApplicationController
   before_action :set_pet, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @pets = Pet.includes(:owner).order(:name)
+    @pets = Pet.includes(:owner).with_attached_photo.order(:name)
   end
 
   def show
@@ -46,6 +46,6 @@ class PetsController < ApplicationController
   end
 
   def pet_params
-    params.require(:pet).permit(:name, :species, :breed, :date_of_birth, :weight, :owner_id)
+    params.require(:pet).permit(:name, :species, :breed, :date_of_birth, :weight, :owner_id, :photo)
   end
 end

@@ -15,6 +15,18 @@ def appointment_time(days_from_today, hour, minute = 0)
   Time.zone.local(day.year, day.month, day.day, hour, minute, 0)
 end
 
+def attach_pet_photo(pet, filename, content_type)
+  path = Rails.root.join("db/seeds/pets/#{filename}")
+
+  return unless File.exist?(path)
+
+  pet.photo.attach(
+    io: File.open(path),
+    filename: filename,
+    content_type: content_type
+  )
+end
+
 # Owners
 owner1 = Owner.create!(
   first_name: "Matias",
@@ -80,6 +92,11 @@ pet5 = owner3.pets.create!(
   date_of_birth: Date.new(2018, 11, 30),
   weight: 5.0
 )
+
+# Pet photos
+attach_pet_photo(pet1, "rocky.jpg", "image/jpeg")
+attach_pet_photo(pet2, "milo.jpg", "image/jpeg")
+attach_pet_photo(pet3, "luna.jpeg", "image/jpeg")
 
 # Vets
 vet1 = Vet.create!(

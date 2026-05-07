@@ -18,7 +18,8 @@
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
           <tr>
-            <th class="ps-4">Name</th>
+            <th class="ps-4">Photo</th>
+            <th>Name</th>
             <th>Species</th>
             <th>Breed</th>
             <th>Owner</th>
@@ -31,6 +32,20 @@
           <% @pets.each do |pet| %>
             <tr>
               <td class="ps-4">
+                <% if pet.photo.attached? %>
+                  <%= image_tag pet.photo.variant(resize_to_fill: [60, 60]),
+                    class: "rounded",
+                    style: "width: 60px; height: 60px; object-fit: cover;",
+                    alt: "#{pet.name} photo" %>
+                <% else %>
+                  <div class="rounded bg-light border text-muted d-flex align-items-center justify-content-center"
+                       style="width: 60px; height: 60px;">
+                    <i class="bi bi-image"></i>
+                  </div>
+                <% end %>
+              </td>
+
+              <td>
                 <%= link_to pet.name,
                   pet_path(pet),
                   class: "fw-semibold text-decoration-none" %>
@@ -86,7 +101,7 @@
 
           <% if @pets.empty? %>
             <tr>
-              <td colspan="6" class="text-center text-muted py-4">
+              <td colspan="7" class="text-center text-muted py-4">
                 No pets found.
               </td>
             </tr>
